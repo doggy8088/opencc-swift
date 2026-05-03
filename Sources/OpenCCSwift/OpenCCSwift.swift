@@ -116,12 +116,15 @@ public final class Trie {
                 continue
             }
 
-            let parts = line.split(separator: " ", omittingEmptySubsequences: false)
-            if parts.count < 2 {
+            let separator = line.firstIndex(of: "\t") ?? line.firstIndex(of: " ")
+            guard let separator else {
                 continue
             }
 
-            addWord(source: String(parts[0]), target: String(parts[1]))
+            addWord(
+                source: String(line[..<separator]),
+                target: String(line[line.index(after: separator)...])
+            )
         }
     }
 
