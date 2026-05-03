@@ -70,6 +70,57 @@ import Testing
     }
 }
 
+@Test func builtInConverterConvertsHighConfidenceTaiwanTechTermsToTw2() throws {
+    let converter = try OpenCC.converter(from: "cn", to: "tw2")
+    let cases = [
+        ("电子邮件", "電子郵件"),
+        ("数据库", "資料庫"),
+        ("网络服务", "網路服務"),
+        ("应用程序网关", "應用程式閘道"),
+        ("镜像文件", "映像檔"),
+        ("保存更改", "儲存變更"),
+    ]
+
+    for (source, expected) in cases {
+        #expect(converter.convert(source) == expected)
+    }
+}
+
+@Test func builtInConverterHandlesCnToTw2ResearchEdgeCases() throws {
+    let converter = try OpenCC.converter(from: "cn", to: "tw2")
+    let cases = [
+        ("数据结构数据库", "資料結構資料庫"),
+        ("响应式编程响应头", "回應式程式設計回應標頭"),
+        ("Web 平台库", "Web 平台函式庫"),
+        ("for 循环和while 循环", "for 迴圈和while 迴圈"),
+        ("类（ Class ）加载器", "類別（ Class ）載入器"),
+        ("“数据库”, “网络请求”", "“資料庫”, “網路請求”"),
+        ("项目设置：默认值", "專案設定：預設值"),
+        ("千钧一发", "千鈞一髮"),
+        ("一触即发", "一觸即發"),
+        ("百发百中", "百發百中"),
+        ("爆发发布", "爆發發表"),
+    ]
+
+    for (source, expected) in cases {
+        #expect(converter.convert(source) == expected)
+    }
+}
+
+@Test func builtInConverterDocumentsCurrentPublishReleaseBehaviorToTw2() throws {
+    let converter = try OpenCC.converter(from: "cn", to: "tw2")
+    let cases = [
+        ("软件发布", "軟體發表"),
+        ("发布数据库迁移脚本", "發表資料庫遷移指令碼"),
+        ("发布公告", "發表公告"),
+        ("发布新版本", "發表新版本"),
+    ]
+
+    for (source, expected) in cases {
+        #expect(converter.convert(source) == expected)
+    }
+}
+
 @Test func builtInConverterConvertsTwToCn() throws {
     let converter = try OpenCC.converter(from: "tw", to: "cn")
 

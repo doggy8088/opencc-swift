@@ -240,6 +240,10 @@ public enum Locale {
     }
 
     public enum To {
+        private static let tw2QualityPhrases = """
+應用程序網關	應用程式閘道|鏡像文件	映像檔|保存更改	儲存變更
+"""
+
         public static var cn: DictGroup {
             DictGroup.fromStrings(DictData.TSCharacters, DictData.TSPhrases)
         }
@@ -253,7 +257,7 @@ public enum Locale {
         }
 
         public static var tw2: DictGroup {
-            DictGroup.fromStrings(DictData.TWVariants, DictData.TWPhrasesCustom)
+            DictGroup.fromStrings(DictData.TWVariants, DictData.TWPhrasesCustom, tw2QualityPhrases)
         }
 
         public static var twp: DictGroup {
