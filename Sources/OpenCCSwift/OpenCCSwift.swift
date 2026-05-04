@@ -446,7 +446,7 @@ public final class HtmlConverter {
     }
 
     public func xmlString() -> String {
-        document.xmlString(options: [.nodePreserveWhitespace])
+        document.xmlString(options: [])
     }
 
     private func convert(element: XMLElement, langMatched inheritedLangMatched: Bool) {
