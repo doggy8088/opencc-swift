@@ -79,6 +79,10 @@ import Testing
         ("应用程序网关", "應用程式閘道"),
         ("镜像文件", "映像檔"),
         ("保存更改", "儲存變更"),
+        ("文件名和文件系统", "檔名和檔案系統"),
+        ("文件描述符和函数调用", "檔案描述子和函式呼叫"),
+        ("渲染管线和内存分配", "算繪管線和記憶體配置"),
+        ("网络栈和网络适配器", "網路堆疊和網路介面卡"),
     ]
 
     for (source, expected) in cases {
@@ -183,6 +187,20 @@ import Testing
     let converter = try OpenCC.converter(from: "tw", to: "cn")
 
     #expect(converter.convert("漢語") == "汉语")
+}
+
+@Test func builtInConverterConvertsTw2TechnicalPhrasesToCn() throws {
+    let converter = try OpenCC.converter(from: "tw2", to: "cn")
+    let cases = [
+        ("檔名和檔案系統", "文件名和文件系统"),
+        ("檔案描述子和函式呼叫", "文件描述符和函数调用"),
+        ("算繪管線和記憶體配置", "渲染管线和内存分配"),
+        ("網路堆疊和網路介面卡", "网络栈和网络适配器"),
+    ]
+
+    for (source, expected) in cases {
+        #expect(converter.convert(source) == expected)
+    }
 }
 
 @Test func customConvertersConvertEntriesAndRawDictionary() {
