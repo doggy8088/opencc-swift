@@ -9,7 +9,7 @@ This package ports the local C# OpenCC implementation directly:
 3. `Presets.Full`, `Presets.Cn2t`, and `Presets.T2cn` mirror the C# preset maps.
 4. `Converter` owns one `Trie` per dictionary group and applies them sequentially.
 5. `Trie` walks `UnicodeScalar` values and uses longest-match wins.
-6. `HtmlConverter` uses Foundation's `XMLDocument` for XML-compatible HTML and keeps the original XML data for `restore()`.
+6. `HtmlConverter` uses FoundationXML's `XMLDocument` for XML-compatible HTML and keeps the original XML data for `restore()`.
 
 ## Dictionary format
 

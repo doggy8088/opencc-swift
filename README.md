@@ -15,7 +15,7 @@
 
 ### 開發環境需求
 
-- Swift 6.3+
+- Swift 6.0+
 - Swift Package Manager
 - Xcode Command Line Tools 或 Xcode
 - Git
