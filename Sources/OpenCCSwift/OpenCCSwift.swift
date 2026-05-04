@@ -1,4 +1,5 @@
 import Foundation
+import FoundationXML
 
 public enum OpenCCError: Error, Equatable, LocalizedError {
     case missingLocale(kind: String)
