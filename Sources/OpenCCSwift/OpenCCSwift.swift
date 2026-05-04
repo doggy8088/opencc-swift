@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(FoundationXML)
 import FoundationXML
+#endif
 
 public enum OpenCCError: Error, Equatable, LocalizedError {
     case missingLocale(kind: String)
