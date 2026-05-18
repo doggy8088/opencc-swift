@@ -90,6 +90,24 @@ import Testing
     }
 }
 
+@Test func builtInConverterHandlesCnToTw2ProjectItemContexts() throws {
+    let converter = try OpenCC.converter(from: "cn", to: "tw2")
+    let cases = [
+        ("项目", "項目"),
+        ("清单项目", "清單項目"),
+        ("每个项目", "每個項目"),
+        ("项目文件夹", "專案資料夾"),
+        ("项目的", "專案的"),
+        ("项目目录", "專案目錄"),
+        ("项目管理", "專案管理"),
+        ("项目设置", "專案設定"),
+    ]
+
+    for (source, expected) in cases {
+        #expect(converter.convert(source) == expected)
+    }
+}
+
 @Test func builtInConverterHandlesCnToTw2ResearchEdgeCases() throws {
     let converter = try OpenCC.converter(from: "cn", to: "tw2")
     let cases = [
@@ -196,6 +214,22 @@ import Testing
         ("檔案描述子和函式呼叫", "文件描述符和函数调用"),
         ("算繪管線和記憶體配置", "渲染管线和内存分配"),
         ("網路堆疊和網路介面卡", "网络栈和网络适配器"),
+    ]
+
+    for (source, expected) in cases {
+        #expect(converter.convert(source) == expected)
+    }
+}
+
+@Test func builtInConverterHandlesTw2ToCnProjectItemContexts() throws {
+    let converter = try OpenCC.converter(from: "tw2", to: "cn")
+    let cases = [
+        ("專案", "专案"),
+        ("專案資料夾", "项目文件夹"),
+        ("專案的", "项目的"),
+        ("專案目錄", "项目目录"),
+        ("專案管理", "项目管理"),
+        ("專案設定", "项目设置"),
     ]
 
     for (source, expected) in cases {
