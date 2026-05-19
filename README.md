@@ -2,6 +2,10 @@
 
 `OpenCCSwift` 是依照 [OpenCC for C#](https://github.com/doggy8088/opencc) 實作移植的 SwiftPM OpenCC 函式庫。核心行為保留原實作的內嵌字典、locale preset、Trie 最長匹配與多階段轉換流程。
 
+## 範例
+
+請參考 [`Examples/`](Examples/)，內含基本轉換、不套用詞彙轉換、不同簡繁詞庫差異、自訂詞典與 HTML/XML 轉換範例。
+
 ## 功能
 
 - 內建 `cn`、`hk`、`tw`、`tw2`、`twp`、`jp` locale。
