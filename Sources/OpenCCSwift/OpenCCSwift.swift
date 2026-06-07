@@ -114,19 +114,20 @@ public final class Trie {
     }
 
     public func loadDict(_ dict: String) {
-        for line in dict.split(separator: "|", omittingEmptySubsequences: false) {
-            if line.isEmpty {
+        for line in dict.split(whereSeparator: { $0 == "|" || $0 == "\n" }) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.isEmpty {
                 continue
             }
 
-            let separator = line.firstIndex(of: "\t") ?? line.firstIndex(of: " ")
+            let separator = trimmed.firstIndex(of: "\t") ?? trimmed.firstIndex(of: " ")
             guard let separator else {
                 continue
             }
 
             addWord(
-                source: String(line[..<separator]),
-                target: String(line[line.index(after: separator)...])
+                source: String(trimmed[..<separator]),
+                target: String(trimmed[trimmed.index(after: separator)...])
             )
         }
     }
@@ -218,8 +219,15 @@ public struct Converter {
 public enum Locale {
     public enum From {
         private static let tw2QualityPhrasesRev = """
-檔名	文件名|檔案系統	文件系統|檔案描述子	文件描述符|函式呼叫	函數調用|算繪管線	渲染管線|記憶體配置	內存分配|網路堆疊	網絡棧|網路介面卡	網絡適配器
-"""
+            檔名	文件名
+            檔案系統	文件系統
+            檔案描述子	文件描述符
+            函式呼叫	函數調用
+            算繪管線	渲染管線
+            記憶體配置	內存分配
+            網路堆疊	網絡棧
+            網路介面卡	網絡適配器
+            """
 
         public static var cn: DictGroup {
             DictGroup.fromStrings(DictData.STCharacters, DictData.STPhrases)
@@ -248,8 +256,18 @@ public enum Locale {
 
     public enum To {
         private static let tw2QualityPhrases = """
-應用程序網關	應用程式閘道|鏡像文件	映像檔|保存更改	儲存變更|文件名	檔名|文件系統	檔案系統|文件描述符	檔案描述子|函數調用	函式呼叫|渲染管線	算繪管線|內存分配	記憶體配置|網絡棧	網路堆疊|網絡適配器	網路介面卡
-"""
+            應用程序網關	應用程式閘道
+            鏡像文件	映像檔
+            保存更改	儲存變更
+            文件名	檔名
+            文件系統	檔案系統
+            文件描述符	檔案描述子
+            函數調用	函式呼叫
+            渲染管線	算繪管線
+            內存分配	記憶體配置
+            網絡棧	網路堆疊
+            網絡適配器	網路介面卡
+            """
 
         public static var cn: DictGroup {
             DictGroup.fromStrings(DictData.TSCharacters, DictData.TSPhrases)

@@ -1,0 +1,11 @@
+# Enforce LF line endings for all text files
+* text=auto eol=lf
+
+# Explicitly declare file types
+*.swift text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Mark generated dictionary files
+Sources/OpenCCSwift/DictData.swift linguist-generated=true
