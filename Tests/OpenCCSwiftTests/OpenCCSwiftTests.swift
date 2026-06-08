@@ -201,6 +201,35 @@ import Testing
     }
 }
 
+@Test func builtInConverterUsesPingTaiNotPingTaiInTw2() throws {
+    let cnToTw2 = try OpenCC.converter(from: "cn", to: "tw2")
+    let cases: [(String, String)] = [
+        // bare 平台 (simplified) → 平台 (tw2), never 平臺
+        ("平台", "平台"),
+        // common platform compounds
+        ("跨平台", "跨平台"),
+        ("软件平台", "軟體平台"),
+        ("作业平台", "作業平台"),
+        // library compounds still expand 庫→函式庫
+        ("Web 平台库", "Web 平台函式庫"),
+        ("全平台库列表", "全平台函式庫列表"),
+        ("原生平台库", "原生平台函式庫"),
+    ]
+    for (source, expected) in cases {
+        #expect(cnToTw2.convert(source) == expected)
+    }
+
+    // tw2 → cn reverse: 平台 maps back to 平台
+    let tw2ToCn = try OpenCC.converter(from: "tw2", to: "cn")
+    let revCases: [(String, String)] = [
+        ("跨平台", "跨平台"),
+        ("軟體平台", "软件平台"),
+    ]
+    for (source, expected) in revCases {
+        #expect(tw2ToCn.convert(source) == expected)
+    }
+}
+
 @Test func builtInConverterConvertsTwToCn() throws {
     let converter = try OpenCC.converter(from: "tw", to: "cn")
 
