@@ -68,6 +68,8 @@ print(converter.convert("汉语")) // 漢語
 | `jp` | 日本新字體/異體字 |
 | `t` | passthrough，不載入該階段字典 |
 
+`tw2` 的「台／臺」規則：日常用語用「台」（台北、舞台、電視台），「颱」「檯」不變（颱風、櫃檯），正式名稱保留「臺」（國立臺灣大學、臺北市政府、新臺幣）。輸入寫成「台」的正式名稱也會統一成「臺」。tw2 轉回其他地區時不會把「台」改回「臺」，所以 `tw → tw2 → tw` 不保證能還原原文。白名單來源是 opencc-js 的 `src/custom/TW2TaiProperNouns.js`，字典資料是 `TW2Tai`／`TW2TaiRev`，用 opencc-js 的 `tools/gen-tw2-tai.mjs` 產生。
+
 方向限定 preset：
 
 ```swift

@@ -242,7 +242,7 @@ public enum Locale {
         }
 
         public static var tw2: DictGroup {
-            DictGroup.fromStrings(DictData.TWVariantsRev, DictData.TWPhrasesCustomRev, tw2QualityPhrasesRev)
+            DictGroup.fromStrings(DictData.TWVariantsRev, DictData.TWPhrasesCustomRev, tw2QualityPhrasesRev, DictData.TW2TaiRev)
         }
 
         public static var twp: DictGroup {
@@ -282,7 +282,7 @@ public enum Locale {
         }
 
         public static var tw2: DictGroup {
-            DictGroup.fromStrings(DictData.TWVariants, DictData.TWPhrasesCustom, tw2QualityPhrases)
+            DictGroup.fromStrings(DictData.TWVariants, DictData.TWPhrasesCustom, tw2QualityPhrases, DictData.TW2Tai)
         }
 
         public static var twp: DictGroup {
