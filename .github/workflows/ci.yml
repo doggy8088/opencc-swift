@@ -1,0 +1,76 @@
+name: ci
+
+# 每次 push 與 pull request 都執行 swift test。
+# push 到 main 時，VERSION 檔的版本還沒有 v<版本> tag，就建立 tag 與 GitHub Release。
+# SwiftPM 直接從 git tag 取得版本，所以建立 tag 就是發布。
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Test
+        run: swift test
+
+  release:
+    needs: test
+    if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 建立 tag 與 GitHub Release
+    concurrency:
+      group: release
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version
+        id: version
+        run: |
+          version=$(tr -d '[:space:]' < VERSION)
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::VERSION 檔的內容「$version」不是 Major.Minor.Patch 格式"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+            echo "v$version 已經發布過，略過"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "偵測到新版本 v$version"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Release 內容列出上一個 tag 之後的 commit（commit 訊息是 zh-tw）
+      - name: Create tag and GitHub Release
+        if: steps.version.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          prev=$(git describe --tags --abbrev=0 --match 'v*' HEAD 2>/dev/null || true)
+          {
+            echo "## 變更"
+            echo
+            git log --no-merges --format='- %s (%h)' ${prev:+$prev..}HEAD
+            # 反引號是 Markdown code fence，不是指令替換
+            # shellcheck disable=SC2016
+            printf '\n## 安裝\n\n```swift\n.package(url: "https://github.com/%s.git", from: "%s")\n```\n' "$GITHUB_REPOSITORY" "$VERSION"
+            if [[ -n "$prev" ]]; then
+              printf '\n**Full Changelog**: https://github.com/%s/compare/%s...v%s\n' "$GITHUB_REPOSITORY" "$prev" "$VERSION"
+            fi
+          } > notes.md
+          gh release create "v$VERSION" --target "$GITHUB_SHA" --title "v$VERSION" --notes-file notes.md

@@ -35,3 +35,14 @@ swift run HtmlExample
 ## Regenerating embedded dictionaries
 
 If the upstream C# dictionary changes, regenerate `Sources/OpenCCSwift/DictData.swift` from `OpenCC/src/OpenCC/Internal/DictData.cs` and rerun the full test suite. Keep the generated file as a simple constant table; conversion logic belongs in `Sources/OpenCCSwift/OpenCCSwift.swift`.
+
+## Releasing
+
+SwiftPM resolves versions from git tags, so a release is a `v<version>` tag plus a GitHub Release. The version lives in the `VERSION` file.
+
+`.github/workflows/ci.yml` runs `swift test` on every push and pull request. On a push to `main`, after the tests pass, it reads `VERSION`:
+
+- No `v<version>` tag yet: create the tag and a GitHub Release whose notes list the commits since the previous tag.
+- The tag already exists: skip.
+
+To release, bump `VERSION` (for example `0.1.2`), commit, and push to `main`.
