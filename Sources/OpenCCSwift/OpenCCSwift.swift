@@ -282,11 +282,11 @@ public enum Locale {
         }
 
         public static var tw2: DictGroup {
-            DictGroup.fromStrings(DictData.TWVariants, DictData.TWPhrasesCustom, tw2QualityPhrases, DictData.TW2Tai)
+            DictGroup.fromStrings(DictData.TWVariants, DictData.TWPhrasesCustom, tw2QualityPhrases, DictData.TW2Tai, TaiwanQuality.tw2)
         }
 
         public static var twp: DictGroup {
-            DictGroup.fromStrings(DictData.TWVariants, DictData.TWPhrasesIT, DictData.TWPhrasesName, DictData.TWPhrasesOther)
+            DictGroup.fromStrings(DictData.TWVariants, DictData.TWPhrasesIT, DictData.TWPhrasesName, DictData.TWPhrasesOther, TaiwanQuality.twp)
         }
 
         public static var jp: DictGroup {

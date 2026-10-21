@@ -52,7 +52,8 @@ let package = Package(
         ),
         .testTarget(
             name: "OpenCCSwiftTests",
-            dependencies: ["OpenCCSwift"]
+            dependencies: ["OpenCCSwift"],
+            resources: [.copy("taiwan-quality.tsv")]
         ),
     ],
     swiftLanguageModes: [.v6]
