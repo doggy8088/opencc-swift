@@ -230,7 +230,7 @@ public enum Locale {
             """
 
         public static var cn: DictGroup {
-            DictGroup.fromStrings(DictData.STCharacters, DictData.STPhrases)
+            DictGroup.fromStrings(DictData.STCharacters, DictData.STPhrases, TaiwanQuality.cn)
         }
 
         public static var hk: DictGroup {
