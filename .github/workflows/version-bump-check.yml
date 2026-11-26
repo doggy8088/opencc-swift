@@ -1,8 +1,11 @@
 name: version-bump-check
 
 # 版本 bump 檢查 workflow（各 repo 僅 env 設定不同）。
-# 背景：各 repo 的 publish 都以「版本 tag 不存在」把關；PR 動了程式卻沒 bump 版號時，
-# 合併後會靜默不發佈，且沒有任何提醒（2026-11-26 六個 PR 全部中招，靠人工發現）。
+# 背景：各 repo 的發佈流程都以「新版號」把關（版本 tag 或 registry 上無此版才發佈）；
+# PR 動了程式卻沒 bump 版號時，合併後不會發佈新版，且原本沒有任何提醒
+# （2026-11-26 六個 PR 全部中招，靠人工發現）。
+# 本檢查比較 base 與 HEAD 的實際版號「值」，只有版號確實變更才通過；
+# 只改 manifest 的其他欄位（相依、描述等）不算 bump。
 # 預設只警告；repo variable VERSION_BUMP_ENFORCE=true 時改為擋下（fail）。
 
 on:
@@ -15,6 +18,7 @@ env:
   # === 每 repo 需改的設定 ===
   WATCH_REGEX: '^Sources/'
   VERSION_FILE: 'VERSION'
+  MANIFEST_KIND: 'plain'
   # ==========================
 
 jobs:
@@ -30,17 +34,35 @@ jobs:
         env:
           ENFORCE: ${{ vars.VERSION_BUMP_ENFORCE }}
         run: |
-          changed=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+          changed=$(git diff --name-only --no-renames "origin/${{ github.base_ref }}...HEAD")
           echo "Changed files:"; echo "$changed"
           if ! echo "$changed" | grep -Eq "$WATCH_REGEX"; then
             echo "未動到需發版的路徑，略過"
             exit 0
           fi
-          if echo "$changed" | grep -qx "$VERSION_FILE"; then
-            echo "版號檔案 $VERSION_FILE 已變更，OK"
+          git show "origin/${{ github.base_ref }}:$VERSION_FILE" > /tmp/base_manifest
+          extract() {
+            case "$MANIFEST_KIND" in
+              cargo)
+                awk '/^\[package\]/{f=1} f && /^version *=/{print; exit}' "$1" | sed -E 's/.*"([^"]+)".*/\1/' ;;
+              pyproject)
+                awk '/^\[project\]/{f=1} f && /^version *=/{print; exit}' "$1" | sed -E 's/.*"([^"]+)".*/\1/' ;;
+              json)
+                python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$1" ;;
+              csproj)
+                grep -o '<Version>[^<]*</Version>' "$1" | head -1 | sed -E 's/<[^>]+>//g' ;;
+              plain)
+                tr -d '[:space:]' < "$1" ;;
+            esac
+          }
+          base_version=$(extract /tmp/base_manifest)
+          head_version=$(extract "$VERSION_FILE")
+          echo "Base 版號：$base_version／HEAD 版號：$head_version"
+          if [ -n "$base_version" ] && [ "$base_version" != "$head_version" ]; then
+            echo "版號已由 $base_version 變更為 $head_version，OK"
             exit 0
           fi
-          msg="此 PR 動到了需發版的路徑，但 $VERSION_FILE 未變更：合併後 publish 會因版本 tag 已存在而靜默略過、不會發新版。若這是預期（例如搶先合入待發版的版本），可忽略。"
+          msg="此 PR 動到了需發版的路徑，但版號仍為 $head_version（與 base 相同）：合併後會因版本 tag 已存在而略過發版。若這是預期（例如搶先合入待發版的版本），可忽略。"
           if [ "$ENFORCE" = "true" ]; then
             echo "::error::$msg"
             exit 1
