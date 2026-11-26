@@ -1,0 +1,52 @@
+name: version-bump-check
+
+# 版本 bump 檢查 workflow（各 repo 僅 env 設定不同）。
+# 背景：各 repo 的 publish 都以「版本 tag 不存在」把關；PR 動了程式卻沒 bump 版號時，
+# 合併後會靜默不發佈，且沒有任何提醒（2026-11-26 六個 PR 全部中招，靠人工發現）。
+# 預設只警告；repo variable VERSION_BUMP_ENFORCE=true 時改為擋下（fail）。
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  # === 每 repo 需改的設定 ===
+  WATCH_REGEX: '^Sources/'
+  VERSION_FILE: 'VERSION'
+  # ==========================
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check version bump
+        env:
+          ENFORCE: ${{ vars.VERSION_BUMP_ENFORCE }}
+        run: |
+          changed=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+          echo "Changed files:"; echo "$changed"
+          if ! echo "$changed" | grep -Eq "$WATCH_REGEX"; then
+            echo "未動到需發版的路徑，略過"
+            exit 0
+          fi
+          if echo "$changed" | grep -qx "$VERSION_FILE"; then
+            echo "版號檔案 $VERSION_FILE 已變更，OK"
+            exit 0
+          fi
+          msg="此 PR 動到了需發版的路徑，但 $VERSION_FILE 未變更：合併後 publish 會因版本 tag 已存在而靜默略過、不會發新版。若這是預期（例如搶先合入待發版的版本），可忽略。"
+          if [ "$ENFORCE" = "true" ]; then
+            echo "::error::$msg"
+            exit 1
+          fi
+          echo "::warning::$msg"
+          {
+            echo "### ⚠️ 未 bump 版號"
+            echo "$msg"
+          } >> "$GITHUB_STEP_SUMMARY"
