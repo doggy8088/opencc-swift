@@ -46,3 +46,11 @@ SwiftPM resolves versions from git tags, so a release is a `v<version>` tag plus
 - The tag already exists: skip.
 
 To release, bump `VERSION` (for example `0.1.2`), commit, and push to `main`.
+
+
+## 本機與 CI 驗證分工
+
+- 啟用本機 pre-commit hook（每個 clone 設定一次）：`git config core.hooksPath .githooks`
+- 分工原則：本機負責 format 與快速回歸；CI 負責完整測試矩陣與「乾淨環境」驗證。hook 只放快檢查，慢測試一律交給 CI，避免被 `--no-verify` 繞過。
+- 本機 hook：只做 `git diff --cached --check`。`swift test` 需數分鐘，明載不放進 hook。
+- CI：`ci.yml`（macOS）跑完整 `swift test`，以 CI 為準。

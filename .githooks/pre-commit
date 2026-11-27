@@ -1,0 +1,7 @@
+#!/bin/sh
+# 本機 pre-commit hook（啟用方式見 repo 文件的「本機與 CI 驗證分工」）。
+# swift test 需數分鐘，不適合每次 commit；hook 只做空白/衝突標記等零成本檢查，測試交給 CI（ci.yml 已有 PR test）。
+set -e
+echo "[pre-commit] git diff --check (staged)"
+git diff --cached --check
+# 需要時手動跑完整測試：swift test
