@@ -19,7 +19,8 @@ jobs:
         run: swift --version
 
       - name: Test
-        run: swift test
+        # -warnings-as-errors：零警告常規由 CI 把關，任何 compiler warning 都讓 CI 紅燈
+        run: swift test -Xswiftc -warnings-as-errors
 
   release:
     needs: test
